@@ -71,12 +71,13 @@ sequenceDiagram
 
 ---
 
-## � Getting Started on GitHub
+## 🚀 Getting Started on GitHub
 
-1. **Clone & Setup Environment**
+### Local Development Setup
+1. **Clone & Environment**
    ```bash
-   git clone https://github.com/your-username/ai-learning.git
-   cd ai-learning
+   git clone https://github.com/parthibanktech/ai-learning-langchain-agents.git
+   cd ai-learning-langchain-agents
    python -m venv venv
    source venv/bin/activate  # Windows: venv\Scripts\activate
    ```
@@ -88,8 +89,19 @@ sequenceDiagram
    # Add your OPENAI_API_KEY to .env
    ```
 
-3. **Explore the Lab**
+3. **Explore the Lab Locally**
    The best way to learn is by doing. Open `index.html` in your browser to launch the **Interactive Learning Dashboard**!
+
+---
+
+## ☁️ Cloud Deployment (Render via Docker)
+This project is configured out-of-the-box to be deployed for **free** on [Render Cloud](https://render.com) using the included `Dockerfile` and ultra-fast Nginx container.
+
+1. Create an account on **Render.com**.
+2. Click **New +** -> **Web Service**.
+3. Connect your GitHub and select this repository (`ai-learning-langchain-agents`).
+4. Set the **Environment** to `Docker` and instance type to `Free`.
+5. Click **Deploy**. Your dashboard will be live online in 2 minutes!
 
 ---
 
