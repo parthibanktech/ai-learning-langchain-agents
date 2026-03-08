@@ -92,38 +92,39 @@ def create_research_agent():
     )
 
 # ── Demo ──────────────────────────────────────────────────────────────────
-print("🚀 AI Research Assistant Demo")
-print("=" * 60)
+if __name__ == "__main__":
+    print("🚀 AI Research Assistant Demo")
+    print("=" * 60)
 
-# Demo 1: Structured Report
-report = generate_report("vector database")
-print(f"\n{'='*60}")
-print(f"📋 RESEARCH REPORT: {report.topic.upper()}")
-print(f"{'='*60}")
-print(f"\n📌 SUMMARY:\n{report.summary}")
-print(f"\n🎯 KEY POINTS:")
-for i, point in enumerate(report.key_points, 1):
-    print(f"   {i}. {point}")
-print(f"\n💼 USE CASES:")
-for uc in report.use_cases:
-    print(f"   • {uc}")
-print(f"\n📈 DIFFICULTY: {report.difficulty}")
-print(f"\n👉 NEXT STEPS: {report.next_steps}")
+    # Demo 1: Structured Report
+    report = generate_report("vector database")
+    print(f"\n{'='*60}")
+    print(f"📋 RESEARCH REPORT: {report.topic.upper()}")
+    print(f"{'='*60}")
+    print(f"\n📌 SUMMARY:\n{report.summary}")
+    print(f"\n🎯 KEY POINTS:")
+    for i, point in enumerate(report.key_points, 1):
+        print(f"   {i}. {point}")
+    print(f"\n💼 USE CASES:")
+    for uc in report.use_cases:
+        print(f"   • {uc}")
+    print(f"\n📈 DIFFICULTY: {report.difficulty}")
+    print(f"\n👉 NEXT STEPS: {report.next_steps}")
 
-# Demo 2: Agent for conversational research
-print(f"\n{'='*60}")
-print("🤖 CONVERSATIONAL AGENT MODE")
-print(f"{'='*60}")
+    # Demo 2: Agent for conversational research
+    print(f"\n{'='*60}")
+    print("🤖 CONVERSATIONAL AGENT MODE")
+    print(f"{'='*60}")
 
-agent = create_research_agent()
+    agent = create_research_agent()
 
-questions = [
-    "What is LangChain and how is it used?",
-    "Compare LangChain and prompt engineering",
-]
+    questions = [
+        "What is LangChain and how is it used?",
+        "Compare LangChain and prompt engineering",
+    ]
 
-for q in questions:
-    print(f"\n❓ {q}")
-    result = agent.invoke({"messages": [("human", q)]})
-    last_msg = result["messages"][-1]
-    print(f"🤖 {last_msg.content[:500]}")
+    for q in questions:
+        print(f"\n❓ {q}")
+        result = agent.invoke({"messages": [("human", q)]})
+        last_msg = result["messages"][-1]
+        print(f"🤖 {last_msg.content[:500]}")

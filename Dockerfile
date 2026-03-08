@@ -1,18 +1,27 @@
-# Use the lightweight Nginx image to serve static content
-FROM nginx:alpine
+# Use official Python runtime
+FROM python:3.11-slim
 
-# Remove the default Nginx index.html completely
-RUN rm -rf /usr/share/nginx/html/*
+# Set the working directory
+WORKDIR /app
 
-# Copy the specific frontend dashboard files over
-COPY index.html /usr/share/nginx/html/
-COPY index.css /usr/share/nginx/html/
-COPY dashboard.css /usr/share/nginx/html/
-COPY app.js /usr/share/nginx/html/
-COPY dashboard.js /usr/share/nginx/html/
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
 
-# Expose port 80 (Render cloud automatically routes HTTP traffic here)
-EXPOSE 80
+# Install all Python dependencies (LangChain, OpenAI, FastAPI, etc.)
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy the frontend files specifically so the web server can serve them
+COPY index.html .
+COPY app.js .
+COPY dashboard.js .
+COPY index.css .
+COPY dashboard.css .
+
+# Copy the Python backend scripts (including server.py and LangChain files)
+COPY *.py .
+
+# Expose the port for Render to route traffic
+EXPOSE 10000
+
+# Start the FastAPI server (which serves the frontend AND connects to OpenAI)
+CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "10000"]

@@ -1,4 +1,4 @@
-function startResearch() {
+async function startResearch() {
     const topic = document.getElementById('topicInput').value;
     if (!topic) return;
 
@@ -9,87 +9,46 @@ function startResearch() {
     document.getElementById('researchBtn').disabled = true;
     document.getElementById('btnText').innerText = 'Processing...';
 
-    // Simulate AI thinking time
-    setTimeout(() => {
-        generateMockReport(topic);
-    }, 2500);
-}
+    try {
+        // Hitting the real Python backend connecting to OpenAI!
+        const response = await fetch('/api/research', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ topic: topic })
+        });
 
-function generateMockReport(topic) {
-    const data = {
-        "vector database": {
-            topic: "Vector Databases",
-            summary: "Vector databases are specialized storage engines that handle high-dimensional embeddings. Unlike traditional relational databases, they use semantic similarity to find relationships between data points, making them the backbone of Large Language Model (LLM) applications and Retrieval-Augmented Generation (RAG).",
-            keyPoints: [
-                "Efficient high-dimensional vector storage.",
-                "Fast semantic similarity search via indexing.",
-                "Enables memory for LLM agents.",
-                "Supports diverse data (text, image, audio).",
-                "Scalable to billions of vectors."
-            ],
-            useCases: [
-                "Semantic Document Search",
-                "Recommendation Systems",
-                "AI Content Moderation"
-            ],
-            difficulty: "Intermediate",
-            nextSteps: "Study vector indexing algorithms like HNSW and IVF, then implement a FAISS-based RAG pipeline."
-        },
-        "langchain": {
-            topic: "LangChain Framework",
-            summary: "LangChain is the premier framework for developing applications powered by large language models. It provides a modular set of tools, components, and interfaces that simplify the entire lifecycle of LLM application development, from prompt management to deployment.",
-            keyPoints: [
-                "Modular chains via LCEL syntax.",
-                "Robust tool and agent integration.",
-                "Unified API for diverse LLM providers.",
-                "Comprehensive logging and observability.",
-                "Large ecosystem of community integrations."
-            ],
-            useCases: [
-                "Autonomous AI Researchers",
-                "Complex Customer Support Bots",
-                "Data Analysis Copilots"
-            ],
-            difficulty: "Beginner",
-            nextSteps: "Master the LCEL pipe syntax and explore LangGraph for stateful agentic workflows."
+        if (!response.ok) {
+            throw new Error(`Server returned status: ${response.status}`);
         }
-    };
 
-    // Default to general info if not found in mock data
-    const report = data[topic.toLowerCase()] || {
-        topic: topic,
-        summary: `${topic} is a significant technical domain in the 2025 AI landscape, focusing on specialized computational patterns and intelligent orchestration.`,
-        keyPoints: [
-            "Critical component of modern AI stacks.",
-            "Enables advanced reasoning capabilities.",
-            "Scalable architecture patterns.",
-            "Rapidly evolving community ecosystem.",
-            "Standardized integration interfaces."
-        ],
-        useCases: [
-            "Enterprise Automation",
-            "Technical Problem Solving",
-            "Predictive Maintenance"
-        ],
-        difficulty: "Advanced",
-        nextSteps: "Review the official documentation and build a minimal prototype to test edge cases."
-    };
+        const report = await response.json();
 
-    // Update UI
-    document.getElementById('resTopic').innerText = report.topic.toUpperCase();
-    document.getElementById('resSummary').innerText = report.summary;
-    document.getElementById('resDifficulty').innerText = report.difficulty;
-    document.getElementById('resNextSteps').innerText = report.nextSteps;
+        // Update UI with real LangChain data
+        document.getElementById('resTopic').innerText = report.topic.toUpperCase();
+        document.getElementById('resSummary').innerText = report.summary;
+        document.getElementById('resDifficulty').innerText = report.difficulty;
+        document.getElementById('resNextSteps').innerText = report.next_steps;
 
-    const kpCont = document.getElementById('resKeyPoints');
-    kpCont.innerHTML = report.keyPoints.map(kp => `<div class="list-item"><i class="fas fa-chevron-right"></i> ${kp}</div>`).join('');
+        const kpCont = document.getElementById('resKeyPoints');
+        kpCont.innerHTML = report.key_points.map(kp => `<div class="list-item"><i class="fas fa-chevron-right"></i> ${kp}</div>`).join('');
 
-    const ucCont = document.getElementById('resUseCases');
-    ucCont.innerHTML = report.useCases.map(uc => `<div class="list-item"><i class="fas fa-check"></i> ${uc}</div>`).join('');
+        const ucCont = document.getElementById('resUseCases');
+        ucCont.innerHTML = report.use_cases.map(uc => `<div class="list-item"><i class="fas fa-check"></i> ${uc}</div>`).join('');
 
-    // Switch screens
-    document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('reportResult').style.display = 'block';
-    document.getElementById('researchBtn').disabled = false;
-    document.getElementById('btnText').innerText = 'Execute Research';
+        // Switch screens
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('reportResult').style.display = 'block';
+        document.getElementById('researchBtn').disabled = false;
+        document.getElementById('btnText').innerText = 'Execute Research';
+
+    } catch (error) {
+        console.error("Research failed:", error);
+        alert("🚨 Backend Connection Failed! Make sure you are running the server and have your OPENAI_API_KEY set.");
+
+        // Reset UI
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('initialState').style.display = 'flex';
+        document.getElementById('researchBtn').disabled = false;
+        document.getElementById('btnText').innerText = 'Execute Research';
+    }
 }
