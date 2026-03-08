@@ -10,8 +10,15 @@ COPY requirements.txt .
 # Install all Python dependencies (LangChain, OpenAI, etc.)
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all project files (HTML, JS, CSS, and Python scripts)
-COPY . .
+# Copy the frontend files specifically so the web server can see them
+COPY index.html .
+COPY app.js .
+COPY dashboard.js .
+COPY index.css .
+COPY dashboard.css .
+
+# Copy the Python backend scripts too
+COPY *.py .
 
 # Expose the port for Render to route traffic
 EXPOSE 10000
