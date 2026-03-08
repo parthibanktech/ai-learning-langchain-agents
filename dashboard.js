@@ -318,17 +318,35 @@ function activateModuleHandler(mod, element) {
     typeTerminal(mod.output);
 }
 
-function executePlayground() {
+async function executePlayground() {
     const userInput = document.getElementById('playInput').value;
     if (!userInput) return;
 
     const term = document.getElementById('terminalText');
-    term.innerText = "⏳ Processing runtime request...";
+    term.innerText = "⏳ Processing runtime request via Python Engine...";
 
-    setTimeout(() => {
-        const simResponse = activeModule.simulation(userInput);
-        typeTerminal(simResponse);
-    }, 1200);
+    try {
+        const response = await fetch('/api/playground', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ module_id: activeModule.id, input: userInput })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Backend Error ${response.status}`);
+        }
+
+        const result = await response.json();
+        typeTerminal(result.output);
+
+    } catch (e) {
+        console.warn("⚠️ API Failed, falling back to local simulation: " + e.message);
+        // Fallback to local simulation if python api isn't connected
+        setTimeout(() => {
+            const simResponse = activeModule.simulation(userInput);
+            typeTerminal("[⚠ LOCAL SIMULATION] " + simResponse);
+        }, 1200);
+    }
 }
 
 function typeTerminal(text) {
