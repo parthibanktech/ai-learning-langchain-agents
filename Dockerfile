@@ -1,28 +1,18 @@
-# Use official Python runtime
-FROM python:3.11-slim
+# Use the lightweight Nginx image to serve static content
+FROM nginx:alpine
 
-# Set the working directory
-WORKDIR /app
+# Remove the default Nginx index.html completely
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+# Copy the specific frontend dashboard files over
+COPY index.html /usr/share/nginx/html/
+COPY index.css /usr/share/nginx/html/
+COPY dashboard.css /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+COPY dashboard.js /usr/share/nginx/html/
 
-# Install all Python dependencies (LangChain, OpenAI, etc.)
-RUN pip install --no-cache-dir -r requirements.txt
+# Expose port 80 (Render cloud automatically routes HTTP traffic here)
+EXPOSE 80
 
-# Copy the frontend files specifically so the web server can see them
-COPY index.html .
-COPY app.js .
-COPY dashboard.js .
-COPY index.css .
-COPY dashboard.css .
-
-# Copy the Python backend scripts too
-COPY *.py .
-
-# Expose the port for Render to route traffic
-EXPOSE 10000
-
-# Start a simple Python web server to serve the HTML Dashboard
-# AND keep the container alive so you can run Python scripts in the Render Shell
-CMD ["python", "-m", "http.server", "10000"]
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
